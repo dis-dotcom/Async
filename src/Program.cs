@@ -1,23 +1,58 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-Main();
 
-void Main()
+Application.Run();
+
+static class Application
 {
+    static string Now => $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
 
+    public static void Run()
+    {
+        var target = nameof(TestOne);
+        Log($"Begin {target}");
+        TestOne();
+        Log($"End {target}");
+
+        target = nameof(TestTwo);
+        Log($"Begin {target}");
+        TestTwo();
+        Log($"End {target}");
+    }
+
+    static void TestOne()
+    {
+        Outer(() =>
+        {
+            Thread.Sleep(3_000);
+        });
+    }
+
+    static void TestTwo()
+    {
+        Outer(async () =>
+        {
+            await Task.Delay(3_000);
+        });
+    }
+
+    static void Outer(Action? action = null) => action?.Invoke();
+    
+    static void Log(params object[] objs)
+    {
+        var info = ThreadingInfo();
+
+        Console.WriteLine($"{Now} [{info.ThreadId}-{info.TaskId}]: {string.Join(" | ", objs)}");
+
+        static (int ThreadId, int TaskId) ThreadingInfo()
+        {
+            return (Thread.CurrentThread.ManagedThreadId, Task.CurrentId ?? 0);
+        }
+    }
 }
 
-void TestOne()
-{
-    Outer();
-}
 
-void TestTwo()
-{
-    Outer();
-}
 
-void Outer(Action action)
-{
-    action();
-}
+
