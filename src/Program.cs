@@ -7,8 +7,6 @@ Application.Run();
 
 static class Application
 {
-    static string Now => $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
-
     public static void Run()
     {
         var target = nameof(TestOne);
@@ -44,7 +42,9 @@ static class Application
     {
         var info = ThreadingInfo();
 
-        Console.WriteLine($"{Now} [{info.ThreadId}-{info.TaskId}]: {string.Join(" | ", objs)}");
+        Console.WriteLine($"{Now()} [{info.ThreadId}-{info.TaskId}]: {string.Join(" | ", objs)}");
+
+        static string Now() => $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
 
         static (int ThreadId, int TaskId) ThreadingInfo()
         {
